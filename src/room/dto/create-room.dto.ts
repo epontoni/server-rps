@@ -1,1 +1,3 @@
-export class CreateRoomDto {}
+import { Room } from '../entities/room.entity';
+
+export class CreateRoomDto extends Room {}
