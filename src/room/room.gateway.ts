@@ -26,18 +26,40 @@ export class RoomGateway implements OnModuleInit {
       // - Send a welcome message to client: socket.emit('message', 'Welcome to server')
       // - Notify all client that a new client has connected to server: socket.broadcast.emit('message', 'A new user has joined the chat')
       // - Add client to a clients list: clients.push(socket)
+      
+      //const nickname = socket.handshake.auth.nickname;
+      //const player = this.roomService.addPlayer(socket.id, nickname);
+      //socket.emit('playerCreated', player);
+
 
       // Client disconnect from server
       socket.on('disconnect', () => {
         console.log(`Client disconnected: ${socket.id}`);
+        // Things to do when client disconnect from server
+        // - If the client created a room, delete it.
+        this.roomService.removeBySocketId(socket.id);
       });
     });
   }
 
   @SubscribeMessage('createRoom')
   create(@MessageBody() createRoomDto: CreateRoomDto) {
-    console.log('[Event: createRoom]', createRoomDto)
-    return this.roomService.create(createRoomDto);
+    console.log('[Event: createRoom]', createRoomDto);
+    const room = this.roomService.create(createRoomDto);
+    this.server.emit('roomCreated', room);
+    return room;
+  }
+
+  @SubscribeMessage('joinRoom')
+  joinRoom(@MessageBody() data: any) {
+    console.log('[Event: joinRoom]', data.roomId, data.socketId, data.nickname);
+    const room = this.roomService.joinRoom(
+      data.roomId,
+      data.socketId,
+      data.nickname,
+    );
+    this.server.emit('roomJoined', room);
+    //return roomId;
   }
 
   @SubscribeMessage('findAllRoom')
@@ -46,7 +68,7 @@ export class RoomGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('findOneRoom')
-  findOne(@MessageBody() id: number) {
+  findOne(@MessageBody() id: string) {
     return this.roomService.findOne(id);
   }
 
@@ -56,7 +78,7 @@ export class RoomGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('removeRoom')
-  remove(@MessageBody() id: number) {
+  remove(@MessageBody() id: string) {
     return this.roomService.remove(id);
   }
 }
