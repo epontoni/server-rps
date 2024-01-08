@@ -62,6 +62,13 @@ export class RoomGateway implements OnModuleInit {
     //return roomId;
   }
 
+  @SubscribeMessage('startGame')
+  startGame(@MessageBody() roomId: string) {
+    console.log('[Event: startGame]', roomId);
+    const rivalSocket = this.roomService.rival(roomId);
+    this.server.to(rivalSocket).emit('gameStarted', roomId);
+  }
+
   @SubscribeMessage('findAllRoom')
   findAll() {
     return this.roomService.findAll();

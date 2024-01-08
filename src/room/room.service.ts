@@ -35,6 +35,12 @@ export class RoomService {
     return room;
   }
 
+  rival(roomId: string) {
+    console.log('[Service: rival]', roomId);
+    const room = this.rooms[roomId];
+    return room.players[1].socketId;
+  }
+
   removeBySocketId(socketId: string) {
     console.log('[Service: removeBySocketId]', socketId);
 
