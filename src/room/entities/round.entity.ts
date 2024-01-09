@@ -9,10 +9,10 @@ export class Round {
   winner: string;
   ongoing: boolean = true;
 
-  setPlay(player: string, play: string) {
-    if (this.p1.player === '') {
+  setPlay(player: string, play: string, isOwner:  boolean) {
+    if (isOwner === true && this.p1.player === '') {
       this.p1 = { player, play };
-    } else {
+    } else (isOwner === false && this.p2.player === '') {
       this.p2 = { player, play };
     }
   }

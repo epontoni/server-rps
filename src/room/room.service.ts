@@ -49,7 +49,7 @@ export class RoomService {
     console.log('[Service: play] onGoingRound', onGoingRound);
     if (onGoingRound) {
       const round = room.rounds[room.rounds.length - 1];
-      round.setPlay(playerMove.socketId, playerMove.move);
+      round.setPlay(playerMove.socketId, playerMove.move, playerMove.isOwner);
       const winner = round.setWinner();
 
       for (const player of room.players) {
