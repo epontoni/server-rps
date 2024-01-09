@@ -12,7 +12,7 @@ export class Round {
   setPlay(player: string, play: string, isOwner:  boolean) {
     if (isOwner === true && this.p1.player === '') {
       this.p1 = { player, play };
-    } else (isOwner === false && this.p2.player === '') {
+    } else if (isOwner === false && this.p2.player === '') {
       this.p2 = { player, play };
     }
   }

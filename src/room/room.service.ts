@@ -62,7 +62,7 @@ export class RoomService {
       return round;
     } else {
       const round = room.addRound();
-      round.setPlay(playerMove.socketId, playerMove.move);
+      round.setPlay(playerMove.socketId, playerMove.move, playerMove.isOwner);
       console.log('Room, round: ', room, round);
     }
   }

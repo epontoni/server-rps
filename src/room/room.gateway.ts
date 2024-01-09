@@ -45,7 +45,7 @@ export class RoomGateway implements OnModuleInit {
   create(@MessageBody() createRoomDto: CreateRoomDto) {
     console.log('[Event: createRoom]', createRoomDto);
     const room = this.roomService.create(createRoomDto);
-    this.server.emit('roomCreated', room);
+    this.server.to(createRoomDto.socketId).emit('roomCreated', room);
     return room;
   }
 
@@ -57,7 +57,7 @@ export class RoomGateway implements OnModuleInit {
       data.socketId,
       data.nickname,
     );
-    this.server.emit('roomJoined', room);
+    this.server.to([room.owner.socketId, data.socketId]).emit('roomJoined', room);
     //return roomId;
   }
 
