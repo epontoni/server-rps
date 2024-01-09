@@ -1,12 +1,14 @@
 //import { v4 as uuid } from "uuid";
 //import uuidToPin from "../../utils/uuidToPin";
 import { Player } from "./player.entity";
+import { Round } from "./round.entity";
 
 export class Room {
   //id: string;
   roomId: string;
   owner: Player;
   players: Player[] = [];
+  rounds: Round[] = [];
 
   constructor(socketId: string, nickname: string) {
     //this.id = uuid();
@@ -17,5 +19,11 @@ export class Room {
 
   addPlayer(player: Player) {
     this.players.push(player);
+  }
+
+  addRound() {
+    const round = new Round();
+    this.rounds.push(round);
+    return round;
   }
 }

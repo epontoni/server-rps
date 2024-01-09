@@ -41,6 +41,32 @@ export class RoomService {
     return room.players[1].socketId;
   }
 
+  play(playerMove: any) {
+    console.log('[Service: play]', playerMove);
+    const room = this.rooms[playerMove.roomId]; // Selecciono la sala
+    console.log('[Service: play] Sala seleccionada', room);
+    const onGoingRound = room.rounds[room.rounds.length - 1]?.ongoing; // Elijo el último round y compruebo si está en curso
+    console.log('[Service: play] onGoingRound', onGoingRound);
+    if (onGoingRound) {
+      const round = room.rounds[room.rounds.length - 1];
+      round.setPlay(playerMove.socketId, playerMove.move);
+      const winner = round.setWinner();
+
+      for (const player of room.players) {
+        if (player.socketId === winner) {
+          player.score++;
+        }
+      }
+
+      round.ongoing = false;
+      return round;
+    } else {
+      const round = room.addRound();
+      round.setPlay(playerMove.socketId, playerMove.move);
+      console.log('Room, round: ', room, round);
+    }
+  }
+
   removeBySocketId(socketId: string) {
     console.log('[Service: removeBySocketId]', socketId);
 
@@ -61,7 +87,7 @@ export class RoomService {
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} room`;
+    return this.rooms[id];
   }
 
   update(id: string, updateRoomDto: UpdateRoomDto) {

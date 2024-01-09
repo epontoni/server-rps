@@ -10,7 +10,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { OnModuleInit } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({ cors: { origin: '*' }})
+@WebSocketGateway({ cors: { origin: '*' } })
 export class RoomGateway implements OnModuleInit {
   @WebSocketServer()
   public server: Server;
@@ -26,11 +26,10 @@ export class RoomGateway implements OnModuleInit {
       // - Send a welcome message to client: socket.emit('message', 'Welcome to server')
       // - Notify all client that a new client has connected to server: socket.broadcast.emit('message', 'A new user has joined the chat')
       // - Add client to a clients list: clients.push(socket)
-      
+
       //const nickname = socket.handshake.auth.nickname;
       //const player = this.roomService.addPlayer(socket.id, nickname);
       //socket.emit('playerCreated', player);
-
 
       // Client disconnect from server
       socket.on('disconnect', () => {
@@ -62,11 +61,26 @@ export class RoomGateway implements OnModuleInit {
     //return roomId;
   }
 
+  // Comunico al rival que el owner ha empezado la partida:
   @SubscribeMessage('startGame')
   startGame(@MessageBody() roomId: string) {
     console.log('[Event: startGame]', roomId);
     const rivalSocket = this.roomService.rival(roomId);
     this.server.to(rivalSocket).emit('gameStarted', roomId);
+  }
+
+  // Recibo jugada:
+  @SubscribeMessage('play')
+  play(@MessageBody() playerMove: any) {
+    console.log('[Event: play]', playerMove);
+    const round = this.roomService.play(playerMove);
+    const updatedRoom = this.roomService.findOne(playerMove.roomId);
+
+    if (round) {
+      this.server
+        .to([round.p1.player, round.p2.player])
+        .emit('roundPlayed', updatedRoom);
+    }
   }
 
   @SubscribeMessage('findAllRoom')
